@@ -9,6 +9,8 @@ import planRoute from "./routes/plan.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/outputs', express.static('public/outputs'));
+
 
 app.use("/api/plan", planRoute);
 
@@ -26,6 +28,6 @@ app.get("/test-openai", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.listen(5001, () => {
+  console.log("Server running on port 5001");
 });

@@ -1,5 +1,5 @@
 export async function generatePlan(payload) {
-  const res = await fetch("http://localhost:5000/api/plan", {
+  const res = await fetch("http://localhost:5001/api/plan", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

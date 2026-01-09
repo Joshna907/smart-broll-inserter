@@ -22,7 +22,9 @@ export async function matchSegments(transcript, brolls) {
   const matches = [];
 
   for (const segment of transcript) {
-    const segEmbedding = await getEmbedding(segment.text);
+    // Use translated text if available, otherwise original
+    const textToMatch = segment.translatedText || segment.text;
+    const segEmbedding = await getEmbedding(textToMatch);
 
     let best = null;
     let bestScore = 0;
@@ -35,17 +37,33 @@ export async function matchSegments(transcript, brolls) {
       }
     }
 
-    if (bestScore > 0.72) {
-      matches.push({
-        start: segment.start,
-        text: segment.text,
-        broll_id: best.id,
-        confidence: bestScore
-      });
-    }
+      
+      // Always capture the best match for this segment, even if low confidence
+      if (best) {
+         // console.log(`Segment "${segment.text.substring(0, 20)}..." best match: ${best.id} (${bestScore.toFixed(2)})`);
+          matches.push({
+            start: segment.start,
+            text: segment.text,
+            broll_id: best.id,
+            confidence: bestScore
+          });
+      }
   }
 
-  return matches;
+  // Sort matches by confidence (highest first)
+  matches.sort((a, b) => b.confidence - a.confidence);
+
+  // Fallback Logic:
+  // 1. Try to find "good" matches (> 0.40)
+  const goodMatches = matches.filter(m => m.confidence > 0.40);
+  
+  if (goodMatches.length > 0) {
+    return goodMatches;
+  }
+
+  // 2. If NO matches were good enough, return the top 5 anyway (Force Insert)
+  console.log("No high-confidence matches found. Using fallback matches.");
+  return matches.slice(0, 5);
 }
 
 

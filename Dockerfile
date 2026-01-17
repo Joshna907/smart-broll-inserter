@@ -1,7 +1,7 @@
 # Dockerfile for Smart B-Roll Inserter (Monolith)
 
-# Use Node.js 18 on Debian (Slim) to support apt-get
-FROM node:18-slim
+# Use Node.js 22 on Debian (Slim) for Vite support
+FROM node:22-slim
 
 # Install FFmpeg
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*

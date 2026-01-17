@@ -17,7 +17,7 @@ app.use(express.json());
 app.use('/outputs', express.static('public/outputs'));
 
 // Serve Static Assets (Frontend Build)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes
 app.use("/api/plan", planRoute);
@@ -37,7 +37,7 @@ app.get("/test-openai", async (req, res) => {
 // SPA Catch-all: Send index.html for any other request
 // Uses Regex wildcard for Express 5 compatibility to avoid 'Missing parameter' error
 app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
 app.listen(5001, () => {

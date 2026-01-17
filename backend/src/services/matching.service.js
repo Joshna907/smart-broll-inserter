@@ -40,12 +40,17 @@ export async function matchSegments(transcript, brolls) {
       
       // Always capture the best match for this segment, even if low confidence
       if (best) {
-         // console.log(`Segment "${segment.text.substring(0, 20)}..." best match: ${best.id} (${bestScore.toFixed(2)})`);
+          // Intro Boost: If segment is in first 15s, boost confidence slightly to favor hooks
+          let finalScore = bestScore;
+          if (segment.start < 15) {
+             finalScore *= 1.1; // 10% boost for intro
+          }
+
           matches.push({
             start: segment.start,
             text: segment.text,
             broll_id: best.id,
-            confidence: bestScore
+            confidence: finalScore
           });
       }
   }

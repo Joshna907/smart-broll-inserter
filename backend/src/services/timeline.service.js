@@ -51,12 +51,12 @@ export async function generateTimelinePlan(input) {
   const totalDuration = segments[segments.length - 1].end;
   
   // Constraints
-  const MIN_GAP_SECONDS = 4; // Avoid too frequent
+  const MIN_GAP_SECONDS = 2; // User Request: Reduced gap for higher density
   
   // Dynamic buffer: For short videos, use smaller buffers
   const isShortVideo = totalDuration < 30;
-  const CRITICAL_BUFFER_START = isShortVideo ? 0 : 5; // 0s for short videos to allow immediate starts
-  const CRITICAL_BUFFER_END = isShortVideo ? 0 : 5; 
+  const CRITICAL_BUFFER_START = 0; // User Request: Allow immediate starts (0.0s)
+  const CRITICAL_BUFFER_END = 0; // User Request: Allow insertions at the very end
   const MAX_INSERTIONS = 6;
   const DEFAULT_DURATION = 2.0; // Standard B-roll duration
 
@@ -75,7 +75,35 @@ export async function generateTimelinePlan(input) {
     }
 
     // Filter: Frequency (Avoid overlap + buffer)
-    if (start < lastInsertionEnd + MIN_GAP_SECONDS) {
+    // Check against ALL existing insertions, because we process in Confidence Order (not Time Order)
+    const isTooClose = insertions.some(ins => {
+        const insEnd = ins.start_sec + ins.duration_sec;
+        // Check if New Start is too close to Existing End
+        // OR New End is too close to Existing Start
+        // We want a gap of MIN_GAP_SECONDS between clips
+        const gapBefore = start - insEnd;
+        const gapAfter = ins.start_sec - end;
+        
+        // If it's effectively "inside" or "too close"
+        // Overlap Logic: (StartA <= EndB) and (EndA >= StartB)
+        const overlapping = (start < insEnd) && (end > ins.start_sec);
+        if (overlapping) return true;
+
+        // Gap Logic - Only check the relevant side
+        // If Existing is Before Us: Check Gap Before
+        if (insEnd <= start) { 
+            if (gapBefore < MIN_GAP_SECONDS) return true;
+        }
+        
+        // If Existing is After Us: Check Gap After
+        if (ins.start_sec >= end) {
+            if (gapAfter < MIN_GAP_SECONDS) return true;
+        }
+        
+        return false;
+    });
+
+    if (isTooClose) {
         continue;
     }
 

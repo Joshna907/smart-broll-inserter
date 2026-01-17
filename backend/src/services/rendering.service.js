@@ -158,7 +158,7 @@ export async function renderVideo(plan, outputDir = "public/outputs") {
       .complexFilter(complexFilters) // Don't auto-map, we do it manually
       //.outputOptions('-map 0:a') // Keep original audio
       // We need to map the FINAL video stream AND the original audio
-      .outputOptions(['-map', `[${lastStream}]`]) 
+      .outputOptions(['-map', `[${lastStream}]`, '-map', '0:a']) 
       .on('start', (cmd) => {
           console.log("FFmpeg Command:", cmd);
       })

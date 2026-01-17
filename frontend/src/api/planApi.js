@@ -1,3 +1,4 @@
+// Production: URL Fix Verified
 export async function generatePlan(payload) {
   // Relative URL for Production (Monolith) verification
   const res = await fetch("/api/plan", {

@@ -50,9 +50,7 @@ router.post("/", async (req, res) => {
     */
     console.log("Skipping video render to prevent timeout. Returning Plan only.");
     fullDownloadUrl = null; // UI will hide download button or we can provide a dummy
-    } catch (renderError) {
-        console.error("Video rendering failed:", renderError.message);
-    }
+
 
     // 5. Save STRICT JSON Artifact (Requirement)
     const timestamp = Date.now();

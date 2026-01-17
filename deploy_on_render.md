@@ -39,3 +39,5 @@ Click **Create Web Service**.
 
 ### Troubleshooting
 *   **Build takes forever?**: Docker builds take 3-5 mins because of FFmpeg. Be patient.
+*   **"Port 5001" Error?**: Render expects Port 10000 by default.
+    *   **Fix**: Add an Environment Variable: `PORT` = `5001`.

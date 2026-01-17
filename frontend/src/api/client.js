@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5001/api/plan';
+// FINAL FORCE PUSH: Relative URL Verified
+const API_URL = '/api/plan';
 
 // Default B-roll library to match against
 const DEFAULT_BROLLS = [

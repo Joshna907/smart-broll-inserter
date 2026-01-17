@@ -40,7 +40,10 @@ router.post("/", async (req, res) => {
     try {
         console.log("Starting video render...");
         const videoPath = await renderVideo(videoRenderPlan);
-        fullDownloadUrl = `http://localhost:5001${videoPath}`;
+      // Dynamic URL for production
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+      const host = req.get('host');
+      fullDownloadUrl = `${protocol}://${host}${videoPath}`;
     } catch (renderError) {
         console.error("Video rendering failed:", renderError.message);
     }

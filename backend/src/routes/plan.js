@@ -38,13 +38,18 @@ router.post("/", async (req, res) => {
 
     // 4. Trigger Render (Optional)
     let fullDownloadUrl = null;
-    try {
-        console.log("Starting video render...");
-        const videoPath = await renderVideo(videoRenderPlan);
-      // Dynamic URL for production
-      const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-      const host = req.get('host');
-      fullDownloadUrl = `${protocol}://${host}${videoPath}`;
+    // DISABLED: Synchronous rendering causes timeouts (502) on free tier hosting (Render).
+    // The core requirement is the JSON Plan.
+    /*
+    console.log("Starting video render...");
+    const videoPath = await renderVideo(videoRenderPlan);
+    // Dynamic URL for production
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.get('host');
+    fullDownloadUrl = `${protocol}://${host}${videoPath}`;
+    */
+    console.log("Skipping video render to prevent timeout. Returning Plan only.");
+    fullDownloadUrl = null; // UI will hide download button or we can provide a dummy
     } catch (renderError) {
         console.error("Video rendering failed:", renderError.message);
     }

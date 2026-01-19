@@ -62,9 +62,16 @@ export async function generateTimelinePlan(input) {
 
   console.log(`Filtering ${matches.length} matches...`);
 
+  const usedBrollIds = new Set();
+
   for (const m of matches) {
     // 6 insertions max
     if (insertions.length >= MAX_INSERTIONS) break;
+
+    // Enforce Unique Clips: If this B-roll is already used, skip it.
+    if (usedBrollIds.has(m.broll_id)) {
+        continue;
+    }
 
     const start = m.start;
     const end = start + DEFAULT_DURATION;
@@ -146,6 +153,7 @@ export async function generateTimelinePlan(input) {
     });
 
     lastInsertionEnd = end;
+    usedBrollIds.add(m.broll_id);
   }
 
   // Rescue Logic: If we have matches but 0 insertions (likely due to strict filters on short video), force one.

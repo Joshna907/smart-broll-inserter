@@ -18,6 +18,24 @@ A full-stack application that automatically analyzes talking-head (A-roll) video
 - **AI/ML**: OpenAI API (GPT-4o, Whisper, Embeddings)
 - **Media Processing**: FFmpeg
 
+## System Architecture & Data Flow
+
+1.  **Ingestion**: Receives A-roll (URL) and B-roll (JSON/URL). If B-roll metadata is missing, GPT-4o Vision generates descriptions.
+2.  **Transcription**: A-roll is transcribed using OpenAI Whisper to get timestamped speech segments.
+3.  **Analysis & Matching**:
+    *   **Vector Search**: Speech segments and B-roll descriptions are embedded (text-embedding-3-small).
+    *   **Semantic Scoring**: Cosine similarity determines the best matches.
+    *   **Contextual Filtering**: Logic rules (e.g., *Unique Clip Constraint*, *Intro Prioritization*) refine the matches to ensure variety and pacing.
+4.  **Generation**:
+    *   **Timeline Plan**: A strictly formatted JSON plan is generated.
+    *   **Rendering (Optional)**: FFmpeg stitches the videos based on the plan.
+
+## Design Decisions & Trade-offs
+
+1.  **Unique Clip Constraint**: We enforce one-time use per clip to ensure visual variety, prioritizing production value over strict semantic repetition (e.g., duplicating the "Mumbai" clip).
+2.  **Hybrid Logic (Embeddings + LLM)**: Embeddings provide fast retrieval, while LLMs generate the human-readable "Reason" string, balancing performance with explainability.
+3.  **Node.js Stack**: Chosen over Python for unified full-stack development and superior async I/O performance for media orchestration.
+
 ## Setup Instructions
 
 ### Prerequisites

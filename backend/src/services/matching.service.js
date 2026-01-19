@@ -43,7 +43,10 @@ export async function matchSegments(transcript, brolls) {
           // Intro Boost: If segment is in first 15s, boost confidence slightly to favor hooks
           let finalScore = bestScore;
           if (segment.start < 5) {
-             finalScore *= 1.1; // 10% boost for very start (hook)
+             finalScore *= 1.2; // 20% Boost: Strong Hook (0-5s)
+          } else if (segment.start >= 5 && segment.start < 12) {
+             finalScore *= 0.8; // 20% Penalty: "Mid-Intro Valley" (5-12s). 
+             // Avoids covering the speaker while they establish the topic (e.g. at 7s).
           }
 
           matches.push({
